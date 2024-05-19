@@ -40,7 +40,7 @@ class MyHomePage extends StatelessWidget {
         body: Column(
                   children: [
                     Text('Flavors: ${FlavorConfig.instance.flavor.name}'),
-                    Text('secretAndroid: ${FlavorConfig.instance.values.secretAndroid}' ),
+                    Text('SecretAndroid: ${FlavorConfig.instance.values.secretAndroid}' ),
                     Text('api: ${ FlavorConfig.instance.values.apiHost}'),
                     Text('AppSuffix: ${ FlavorConfig.instance.values.appSuffix}'),
                     Text('ImgSuffix: ${ FlavorConfig.instance.values.imgSuffix}'),
