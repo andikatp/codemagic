@@ -33,13 +33,13 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(FlavorConfig.instance.values.titleApp),
         ),
         body: Column(
                   children: [
-                    Text('Flavor: ${FlavorConfig.instance.flavor.name}'),
+                    Text('Flavors: ${FlavorConfig.instance.flavor.name}'),
                     Text('secretAndroid: ${FlavorConfig.instance.values.secretAndroid}' ),
                     Text('api: ${ FlavorConfig.instance.values.apiHost}'),
                     Text('AppSuffix: ${ FlavorConfig.instance.values.appSuffix}'),
