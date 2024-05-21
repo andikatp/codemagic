@@ -46,8 +46,8 @@ app.*.map.json
 .fvm/
 
 # ENV
-/lib/env_debug.g.dart
-/lib/env_prod.g.dart
+/lib/env/env_dev.g.dart
+/lib/env/env_prod.g.dart
+.env.dev
 .env.prod
-.env.debug
 
