@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:list/flavor_config.dart';
-import 'package:list/flutter_mode_config.dart';
+import 'package:list/testing/home.dart';
+import 'package:upgrader/upgrader.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   FlavorConfig(
     values: const FlavorValues(
       titleApp: "Dev App",
     ),
   );
+  await Upgrader.sharedInstance.initialize();
+  await Upgrader.clearSavedSettings();
   runApp(const MyApp());
 }
 
@@ -31,23 +35,24 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(FlavorConfig.instance.values.titleApp),
-        ),
-        body: Column(
-                  children: [
-                    Text('Flavors: ${FlavorConfig.instance.flavor.name}'),
-                    Text('secretAndroid: ${FlavorConfig.instance.values.secretAndroid}' ),
-                    Text('api: ${ FlavorConfig.instance.values.apiHost}'),
-                    Text('AppSuffix: ${ FlavorConfig.instance.values.appSuffix}'),
-                    Text('ImgSuffix: ${ FlavorConfig.instance.values.imgSuffix}'),
-                    Text('Mode: ${FlutterModeConfig.flutterMode}'),
-                  ],
-                ),
-      ),
+    return const MaterialApp(
+      // home: Scaffold(
+      //   backgroundColor: Colors.white,
+      //   appBar: AppBar(
+      //     title: Text(FlavorConfig.instance.values.titleApp),
+      //   ),
+      //   body: Column(
+      //             children: [
+      //               Text('Flavors: ${FlavorConfig.instance.flavor.name}'),
+      //               Text('SecretAndroid: ${FlavorConfig.instance.values.secretAndroid}' ),
+      //               Text('api: ${ FlavorConfig.instance.values.apiHost}'),
+      //               Text('AppSuffix: ${ FlavorConfig.instance.values.appSuffix}'),
+      //               Text('ImgSuffix: ${ FlavorConfig.instance.values.imgSuffix}'),
+      //               Text('Mode: ${FlutterModeConfig.flutterMode}'),
+      //             ],
+      //           ),
+      // ),
+      home: Home(),
     );
   }
 }
