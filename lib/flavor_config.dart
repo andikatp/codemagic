@@ -1,4 +1,4 @@
-import 'package:list/env/env_debug.dart';
+import 'package:list/env/env_dev.dart';
 
 enum FlavorType {
   dev,
@@ -10,15 +10,11 @@ class FlavorValues {
   final String titleApp;
   final String apiHost;
   final String secretAndroid;
-  final String appSuffix;
-  final String imgSuffix;
   
   const FlavorValues({
     this.titleApp = 'list Dev',
-    this.apiHost = DebugEnv.debugApiHost,
-    this.appSuffix = DebugEnv.debugAppSuffix,
-    this.imgSuffix = DebugEnv.debugImgSuffix,
-    this.secretAndroid = DebugEnv.secretAndroid,
+    this.apiHost = DevEnv.devApiHost,
+    this.secretAndroid = DevEnv.devSecretAndroid,
   });
 }
 

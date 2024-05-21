@@ -13,10 +13,8 @@ void main() {
     flavor: FlavorType.prod,
     values: FlavorValues(
       titleApp: "Prod App",
-      secretAndroid: ProdEnv.secretAndroid,
+      secretAndroid: ProdEnv.prodSecretAndroid,
       apiHost: ProdEnv.prodApiHost,
-      appSuffix: ProdEnv.prodAppSuffix,
-      imgSuffix: ProdEnv.prodImgSuffix,
     ),
   );
   runApp(const MyApp());
@@ -163,8 +161,6 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Flavor: ${FlavorConfig.instance.flavor.name}'),
           Text('secretAndroid: ${FlavorConfig.instance.values.secretAndroid}'),
           Text('api: ${FlavorConfig.instance.values.apiHost}'),
-          Text('AppSuffix: ${FlavorConfig.instance.values.appSuffix}'),
-          Text('ImgSuffix: ${FlavorConfig.instance.values.imgSuffix}'),
           Text('Mode: ${FlutterModeConfig.flutterMode}'),
           if (!_isShorebirdAvailable)
             const Text('Shorebird Engine not available.'),

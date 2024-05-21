@@ -20,7 +20,7 @@ void main() {
       // Set values in FlavorConfig
       FlavorConfig(
         flavor: FlavorType.prod,
-        values: const FlavorValues(titleApp: 'Prod App')
+        values:  const FlavorValues(titleApp: 'Prod App')
       );
 
       expect(FlavorConfig.instance.values.titleApp, 'Prod App');
