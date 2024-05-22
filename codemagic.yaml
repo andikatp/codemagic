@@ -154,7 +154,7 @@ workflows:
     # # Check this link for more info - https://docs.codemagic.io/yaml-running-builds/starting-builds-automatically/
     triggering:
       events:
-        - pull_request
+        - push
       branch_patterns:          
         - pattern: 'main'
       cancel_previous_builds: true
@@ -166,7 +166,7 @@ workflows:
       - *run_build_runner
       - *shorebird_install
       - *build_android
-      - *build_ios
+      # - *build_ios
     # These are the resulting files/binaries produced by the building process.
     artifacts:
       - build/**/outputs/*apk/**/*.apk
@@ -301,7 +301,7 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - pull_request
+        - push
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
@@ -327,7 +327,7 @@ workflows:
       - *shorebird_install
       # Make sure to add the corresponding Android and iOS path scripts.
       - *patch_android
-      - *patch_ios
+      # - *patch_ios
       # Once the patches are finished, builds for Play Store Console and 
       # App Store Connect are created.
       # This allows us to have a release version incluiding the "patched" code 
