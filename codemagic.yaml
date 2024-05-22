@@ -147,7 +147,6 @@ workflows:
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
-      - *app_config
       - *build_android
       - *use_provisioning_profiles
       - *build_ios
@@ -182,8 +181,8 @@ workflows:
           failure: false
 
   # Since Foodium has different flavors, a staging-specific workflow is defined.
-  release-foodium-staging:
-    name: Release Foodium Staging
+  release-list-staging:
+    name: Release List Staging
     # This integration allows for the publishing of this build to App Store Connect
     integrations:
       # AppStoreConnect_AuthKey is the name of the API key used to integrate 
@@ -244,7 +243,6 @@ workflows:
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
-      - *app_config
       - *build_android
       - *use_provisioning_profiles
       - *build_ios
@@ -283,7 +281,7 @@ workflows:
   # build is necessary.
   # Notice only differences with respect to the two previous workflows are commented.
   patch-list-production:
-    name: Patch Foodium Production
+    name: Patch List Production
     max_build_duration: 60
     triggering:
       events:
