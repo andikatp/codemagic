@@ -4,7 +4,14 @@ definitions:
   scripts:
     # The App version is set here.
     # This needs to be updated manually any time a new version is to be 
-    # released to the stores.
+    # released to the store0s.
+    - &download_env_files
+      name: 🐦 Download Environment Files
+      script: |
+        # Download .env.prod and .env.dev from Google Drive (**Warning: Security Risk**)
+        wget https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_PROJECT_DIR/.env.prod
+        wget https://drive.google.com/uc?export=download&id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ -O $CM_PROJECT_DIR/.env.dev
+
     - &set_version_number
       name: 🔢 Set Version
       script: |
@@ -144,6 +151,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
@@ -240,6 +248,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
@@ -303,6 +312,7 @@ workflows:
         FLAVOR: prod
         BUNDLE: com.example.list
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
