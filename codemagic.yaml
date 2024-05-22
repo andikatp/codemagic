@@ -1,10 +1,5 @@
-# Use the definitions section to define reusable scripts that you can execute
-# in any of your workflows below
 definitions:
-  scripts:
-    # The App version is set here.
-    # This needs to be updated manually any time a new version is to be 
-    # released to the store0s.    
+  scripts:   
     - &create_env_files
       name: 🔑 Create API Key file
       script: |
@@ -29,12 +24,6 @@ definitions:
         # Set Shorebird PATH
         echo PATH="/Users/builder/.shorebird/bin:$PATH" >> $CM_ENV  
     
-    # This script grabs the previously defined environment variable APP_CONFIG
-    # and decodes it. 
-    # Notice it also creates a /config directory at the root level and places 
-    # an app_config.json file right under it, including the decoded contents.
-    # This is a Foodium-specific step as this App requires this file's contents 
-    # at startup.
     - &run_build_runner
       name: 🛠️ Run Build Runner
       script: |
@@ -50,48 +39,26 @@ definitions:
       script: |
         xcode-project use-profiles
 
-    # Use shorebird to create an Android release.
-    # Since Foodium uses flavors, we need to specify the desired flavor and target file.
-    # Additionally, the build-name and build-number arguments are passed after 
-    # adding the necessary -- separator to distinguish between shorebird and flutter args.
     - &build_android
       name: 🤖 Android Release Build
       script: |
         shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
-    # Use shorebird to create an iOS release.
-    # Since Foodium uses flavors, we need to specify the desired flavor and target file.
-    # Additionally, the build-name and build-number arguments are passed after 
-    # adding the necessary -- separator to distinguish between shorebird and flutter args.
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
         shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
-          
-    # Use shorebird to create a patch for an existing android release.
-    # Since Foodium uses flavors, we need to specify the desired flavor and target file.
-    # In this case, the release-version argument is used to address the release 
-    # version + build number this patch will apply to.
-    # Notice the version and build number need to be modified manually for every 
-    # patch you send.
+
     - &patch_android
       name: 🤖 Android PATCH Build
       script: |
         shorebird patch android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
-    # Use shorebird to create a patch for an existing android release.
-    # Since Foodium uses flavors, we need to specify the desired flavor and target file.
-    # In this case, the release-version argument is used to address the release 
-    # version + build number this patch will apply to.
-    # Notice the version and build number need to be modified manually for every 
-    # patch you send.
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
        shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
-# The workflows section allows for the implementation of different workflows that'll 
-# get triggered/executed under different circumstances.
 workflows:
   # Since Foodium has different flavors, a production-specific workflow is defined.
   release-list-production:
@@ -298,9 +265,10 @@ workflows:
         - pull_request
         - push
       branch_patterns:              # Include or exclude watched branches
-        - pattern: 'dev'
+        - pattern: 'main'
+      tag_patterns:
+        - pattern: 'hotfix'
           include: true
-          source: true
       cancel_previous_builds: true
     environment:
       java: 17
