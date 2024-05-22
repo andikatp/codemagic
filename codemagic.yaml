@@ -120,7 +120,7 @@ workflows:
         - pattern: 'main'
           include: true
           source: true  
-     tag_patterns:
+      tag_patterns:
         - pattern: 'hotfix'
           include: false
       cancel_previous_builds: true
