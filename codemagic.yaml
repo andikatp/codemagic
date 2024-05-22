@@ -166,7 +166,7 @@ workflows:
       - *run_build_runner
       - *shorebird_install
       - *build_android
-      - *build_ios
+      # - *build_ios
     # These are the resulting files/binaries produced by the building process.
     artifacts:
       - build/**/outputs/*apk/**/*.apk
@@ -327,7 +327,7 @@ workflows:
       - *shorebird_install
       # Make sure to add the corresponding Android and iOS path scripts.
       - *patch_android
-      - *patch_ios
+      # - *patch_ios
       # Once the patches are finished, builds for Play Store Console and 
       # App Store Connect are created.
       # This allows us to have a release version incluiding the "patched" code 
