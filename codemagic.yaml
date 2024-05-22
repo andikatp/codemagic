@@ -47,7 +47,7 @@ definitions:
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
-        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
+        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart ​--export-options-plist=/Users/builder/export_options.plist
 
     - &patch_android
       name: 🤖 Android PATCH Build
@@ -57,7 +57,7 @@ definitions:
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
-       shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
+       shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart ​--export-options-plist=/Users/builder/export_options.plist
 
 workflows:
   # Since Foodium has different flavors, a production-specific workflow is defined.
@@ -115,16 +115,14 @@ workflows:
     triggering:
       events:
         - pull_request
-        - push
         - tag
       branch_patterns:          
-        - pattern: 'main'
-          include: true
-          source: true  
-      tag_patterns:
-        - pattern: 'hotfix'
-          include: false
+       - pattern: 'main'
+         include: true
+         source: true  
       cancel_previous_builds: true
+    when:
+      condition: not event.tag.name == "hotfix"
     # The scripts that will be run and their execution order is defined here.
     scripts:
       - *create_env_files
@@ -159,6 +157,56 @@ workflows:
       email:
         recipients:
           - andikamufc@gmail.com
+        notify:
+          success: true
+          failure: false
+
+  # We're only interested in patching production releases.
+  # Therefore, a single workflow targetting a previously released production 
+  # build is necessary.
+  # Notice only differences with respect to the two previous workflows are commented.
+  patch-list-production:
+    name: Patch List Production
+    max_build_duration: 60
+    triggering:
+      events:
+        - pull_request
+        - tag
+      branch_patterns:      
+        - pattern: 'main'
+      tag_patterns:
+        - pattern: 'hotfix'
+          include: true
+      cancel_previous_builds: true
+    environment:
+      java: 17
+      groups:
+        - list
+        - shorebird
+      flutter: 3.22.0
+      xcode: 15.0.1
+      cocoapods: default
+      vars:
+        TARGET: prod
+        FLAVOR: prod
+        BUNDLE: com.example.list
+    scripts:
+      - *create_env_files
+      - *set_up_local_properties
+      - *run_build_runner
+      - *shorebird_install
+      - *patch_android
+      # - *patch_ios
+    artifacts:
+      - build/**/outputs/*apk/**/*.apk
+      - build/**/outputs/*bundle/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - andikamufc@email.com
         notify:
           success: true
           failure: false
@@ -256,59 +304,3 @@ workflows:
   #       notify:
   #         success: true
   #         failure: false
-
-  # We're only interested in patching production releases.
-  # Therefore, a single workflow targetting a previously released production 
-  # build is necessary.
-  # Notice only differences with respect to the two previous workflows are commented.
-  patch-list-production:
-    name: Patch List Production
-    max_build_duration: 60
-    triggering:
-      events:
-        - pull_request
-        - push
-        - tag
-      branch_patterns:              # Include or exclude watched branches
-        - pattern: 'main'
-      tag_patterns:
-        - pattern: 'hotfix'
-          include: true
-      cancel_previous_builds: true
-    environment:
-      java: 17
-      groups:
-        - list
-        - shorebird
-      flutter: 3.22.0
-      xcode: 15.0.1
-      cocoapods: default
-      vars:
-        TARGET: prod
-        FLAVOR: prod
-        BUNDLE: com.example.list
-    scripts:
-      - *create_env_files
-      - *set_up_local_properties
-      - *run_build_runner
-      - *shorebird_install
-      # Make sure to add the corresponding Android and iOS path scripts.
-      - *patch_android
-      # - *patch_ios
-      # Once the patches are finished, builds for Play Store Console and 
-      # App Store Connect are created.
-      # This allows us to have a release version incluiding the "patched" code 
-      # and have it released later on once it's approved by the given stores reviewers.
-    artifacts:
-      - build/**/outputs/*apk/**/*.apk
-      - build/**/outputs/*bundle/**/*.aab
-      - build/**/outputs/**/mapping.txt
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-    publishing:
-      email:
-        recipients:
-          - andikamufc@email.com
-        notify:
-          success: true
-          failure: false
