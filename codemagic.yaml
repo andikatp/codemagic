@@ -25,6 +25,12 @@ definitions:
         curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
         # Set Shorebird PATH
         echo PATH="/Users/builder/.shorebird/bin:$PATH" >> $CM_ENV  
+
+    - &run_build_runner
+      name: 🛠️ Run Build Runner
+      script: |
+        # Run build runner
+        dart run build_runner build
     
     # This script grabs the previously defined environment variable APP_CONFIG
     # and decodes it. 
@@ -146,6 +152,7 @@ workflows:
     scripts:
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
       - *use_provisioning_profiles
@@ -242,6 +249,7 @@ workflows:
     scripts:
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
       - *use_provisioning_profiles
@@ -305,6 +313,7 @@ workflows:
     scripts:
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       # Make sure to add the corresponding Android and iOS path scripts.
       - *patch_android
