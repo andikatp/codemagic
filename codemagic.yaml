@@ -14,13 +14,6 @@ definitions:
         echo "$PROD_API_HOST" >> .env.prod
         echo "$DEV_SECRET_ANDROID" >> .env.dev
         echo "$DEV_API_HOST" >> .env.dev
-
-    - &set_version_number
-      name: 🔢 Set Version
-      script: |
-        echo "MAJOR_VERSION=0" >> $CM_ENV
-        echo "MINOR_VERSION=0" >> $CM_ENV
-        echo "PATCH_VERSION=1" >> $CM_ENV
         
     - &set_up_local_properties
       name: 🛠️ Set up local properties
@@ -154,14 +147,16 @@ workflows:
     # # Check this link for more info - https://docs.codemagic.io/yaml-running-builds/starting-builds-automatically/
     triggering:
       events:
+        - pull_request
         - push
       branch_patterns:          
         - pattern: 'main'
+          include: true
+          source: true
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
       - *create_env_files
-      - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
       - *shorebird_install
@@ -255,7 +250,6 @@ workflows:
   #   # The scripts that will be run and their execution order is defined here.
   #   scripts:
   #     - *create_env_files
-  #     - *set_version_number
   #     - *set_up_local_properties
   #     - *run_build_runner
   #     - *shorebird_install
@@ -302,10 +296,11 @@ workflows:
     triggering:
       events:
         - pull_request
+        - push
       branch_patterns:              # Include or exclude watched branches
         - pattern: 'dev'
           include: true
-          source: false
+          source: true
       cancel_previous_builds: true
     environment:
       java: 17
@@ -321,7 +316,6 @@ workflows:
         BUNDLE: com.example.list
     scripts:
       - *create_env_files
-      - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
       - *shorebird_install
