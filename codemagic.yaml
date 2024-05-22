@@ -25,12 +25,6 @@ definitions:
         curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
         # Set Shorebird PATH
         echo PATH="/Users/builder/.shorebird/bin:$PATH" >> $CM_ENV  
-
-    - &run_build_runner
-      name: 🛠️ Run Build Runner
-      script: |
-        # Run build runner
-        dart run build_runner build
     
     # This script grabs the previously defined environment variable APP_CONFIG
     # and decodes it. 
@@ -38,6 +32,19 @@ definitions:
     # an app_config.json file right under it, including the decoded contents.
     # This is a Foodium-specific step as this App requires this file's contents 
     # at startup.
+    - &download_env_files
+      name: Download Environment Files
+      script: |
+        # Download .env.prod and .env.dev from Google Drive (**Warning: Security Risk**)
+        wget https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_PROJECT_DIR/.env.prod
+        wget https://drive.google.com/uc?export=download&id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ -O $CM_PROJECT_DIR/.env.dev
+
+    - &run_build_runner
+      name: 🛠️ Run Build Runner
+      script: |
+        # Run build runner
+        dart run build_runner build
+    
     - &flutter_analyze
       name: 🔍 Run static code analysis
       script: flutter analyze
@@ -126,7 +133,7 @@ workflows:
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -150,6 +157,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
@@ -182,7 +190,7 @@ workflows:
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
@@ -218,12 +226,12 @@ workflows:
       vars:
         TARGET: production
         FLAVOR: production
-        BUNDLE: your.app.bundle.stg
+        BUNDLE: com.example.list.stg
       # These group must have been previously defined on codemagic's dashboard.
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -247,6 +255,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
@@ -279,7 +288,7 @@ workflows:
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
@@ -293,7 +302,7 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - pull_request
+        - push
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
@@ -311,6 +320,7 @@ workflows:
         FLAVOR: prod
         BUNDLE: com.example.list
     scripts:
+      - *download_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
