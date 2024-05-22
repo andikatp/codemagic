@@ -9,8 +9,18 @@ definitions:
       name: 🐦 Download Environment Files
       script: |
         # Download .env.prod and .env.dev from Google Drive
-        curl -L https://drive.usercontent.google.com/uc?id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU&export=download > $CM_PROJECT_DIR/.env.dev
-        curl -L https://drive.usercontent.google.com/u/0/uc?id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ&export=download > $CM_PROJECT_DIR/.env.prod
+        curl -L https://drive.usercontent.google.com/uc?id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU&export=download > $CM_BUILD_DIR/.env.dev
+        curl -L https://drive.usercontent.google.com/u/0/uc?id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ&export=download > $CM_BUILD_DIR/.env.
+    
+    - &create_env_files
+      name: Create API Key file
+      script: |
+        touch .env.prod
+        touch .env.dev
+        echo "$PROD_SECRET_ANDROID" >> .env.prod
+        echo "$PROD_API_HOST" >> .env.prod
+        echo "$DEV_SECRET_ANDROID" >> .env.dev
+        echo "$DEV_API_HOST" >> .env.dev
 
     - &set_version_number
       name: 🔢 Set Version
@@ -157,7 +167,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
-      - *download_env_files
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
@@ -255,7 +265,7 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
-      - *download_env_files
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
@@ -320,7 +330,7 @@ workflows:
         FLAVOR: prod
         BUNDLE: com.example.list
     scripts:
-      - *download_env_files
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
