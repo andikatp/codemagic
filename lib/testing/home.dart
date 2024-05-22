@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
                   () => pageIndexNotifier.value = pageIndexNotifier.value + 1,
                 );
               },
-              child: const Text('Nexta'),
+              child: const Text('Nextaaa'),
             ),
           ],
         ),
