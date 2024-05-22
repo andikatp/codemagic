@@ -39,6 +39,12 @@ definitions:
     # an app_config.json file right under it, including the decoded contents.
     # This is a Foodium-specific step as this App requires this file's contents 
     # at startup.
+    - &run_build_runner
+      name: 🛠️ Run Build Runner
+      script: |
+        # Run build runner
+        dart run build_runner build
+    
     - &flutter_analyze
       name: 🔍 Run static code analysis
       script: flutter analyze
@@ -55,7 +61,7 @@ definitions:
     - &build_android
       name: 🤖 Android Release Build
       script: |
-        shorebird release android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
 
     # Use shorebird to create an iOS release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -64,7 +70,7 @@ definitions:
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
-        shorebird release ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
           
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -75,7 +81,7 @@ definitions:
     - &patch_android
       name: 🤖 Android PATCH Build
       script: |
-        shorebird patch android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
+        shorebird patch android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -86,7 +92,7 @@ definitions:
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
-       shorebird patch ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
+       shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
 # The workflows section allows for the implementation of different workflows that'll 
 # get triggered/executed under different circumstances.
@@ -127,7 +133,7 @@ workflows:
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -154,6 +160,7 @@ workflows:
       - *download_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
       - *use_provisioning_profiles
@@ -183,7 +190,7 @@ workflows:
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
@@ -219,12 +226,12 @@ workflows:
       vars:
         TARGET: production
         FLAVOR: production
-        BUNDLE: your.app.bundle.stg
+        BUNDLE: com.example.list.stg
       # These group must have been previously defined on codemagic's dashboard.
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -251,6 +258,7 @@ workflows:
       - *download_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
       - *use_provisioning_profiles
@@ -280,7 +288,7 @@ workflows:
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
@@ -315,6 +323,7 @@ workflows:
       - *download_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       # Make sure to add the corresponding Android and iOS path scripts.
       - *patch_android
