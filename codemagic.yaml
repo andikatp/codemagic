@@ -164,7 +164,7 @@ workflows:
         - pull_request
       branch_patterns:          
         - pattern: 'main'
-          source: true 
+          target: true 
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
@@ -312,11 +312,11 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - pull_request
+        - push
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
-          source: true  
+          target: true  
       cancel_previous_builds: true
     environment:
       java: 17
