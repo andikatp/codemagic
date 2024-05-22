@@ -303,9 +303,9 @@ workflows:
       events:
         - pull_request
       branch_patterns:              # Include or exclude watched branches
-    - pattern: 'dev'
-      include: true
-      source: false
+        - pattern: 'dev'
+          include: true
+          source: false
       cancel_previous_builds: true
     environment:
       java: 17
