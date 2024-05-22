@@ -301,11 +301,11 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - push
+        - pull_request
       branch_patterns:              # Include or exclude watched branches
     - pattern: 'dev'
       include: true
-      source: true
+      source: false
       cancel_previous_builds: true
     environment:
       java: 17
