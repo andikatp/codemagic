@@ -147,7 +147,6 @@ workflows:
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
-      - *app_config
       - *build_android
       - *use_provisioning_profiles
       - *build_ios
@@ -244,7 +243,6 @@ workflows:
       - *set_version_number
       - *set_up_local_properties
       - *shorebird_install
-      - *app_config
       - *build_android
       - *use_provisioning_profiles
       - *build_ios
