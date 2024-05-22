@@ -48,7 +48,7 @@ definitions:
     - &build_android
       name: 🤖 Android Release Build
       script: |
-        shorebird release android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
 
     # Use shorebird to create an iOS release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -57,7 +57,7 @@ definitions:
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
-        shorebird release ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
           
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -68,7 +68,7 @@ definitions:
     - &patch_android
       name: 🤖 Android PATCH Build
       script: |
-        shorebird patch android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
+        shorebird patch android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -79,7 +79,7 @@ definitions:
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
-       shorebird patch ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
+       shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
 # The workflows section allows for the implementation of different workflows that'll 
 # get triggered/executed under different circumstances.
@@ -285,7 +285,7 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - push
+        - pull_request
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
