@@ -13,7 +13,7 @@ definitions:
         curl -L https://drive.usercontent.google.com/u/0/uc?id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ&export=download > $CM_BUILD_DIR/.env.
     
     - &create_env_files
-      name: Create API Key file
+      name: 🔑 Create API Key file
       script: |
         touch .env.prod
         touch .env.dev
@@ -36,7 +36,7 @@ definitions:
         echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
 
     - &shorebird_install
-      name: 🐦 Install Shorebird CLI
+      name: 📍 Install Shorebird CLI
       script: |
         # Install the Shorebird CLI
         curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
@@ -173,7 +173,6 @@ workflows:
       - *run_build_runner
       - *shorebird_install
       - *build_android
-      - *use_provisioning_profiles
       - *build_ios
     # These are the resulting files/binaries produced by the building process.
     artifacts:
@@ -190,13 +189,13 @@ workflows:
     # In this case, we're automatically submitting the builds to Testflight for iOS 
     # and the internal test track for Andriod -- Configure the submission to your needs.
     publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+      #   submit_to_app_store: false
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
       # Configure email notifications about the store publishing result.
       email:
         recipients:
@@ -288,13 +287,13 @@ workflows:
     # In this case, we're automatically submitting the builds to Testflight for iOS 
     # and the internal test track for Andriod -- Configure the submission to your needs.
     publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+      #   submit_to_app_store: false
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
       # Configure email notifications about the store publishing result.
       email:
         recipients:
