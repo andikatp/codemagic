@@ -305,6 +305,7 @@ workflows:
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
+          include: true
           target: true  
       cancel_previous_builds: true
     environment:
