@@ -4,7 +4,17 @@ definitions:
   scripts:
     # The App version is set here.
     # This needs to be updated manually any time a new version is to be 
-    # released to the stores.
+    # released to the store0s.    
+    - &create_env_files
+      name: 🔑 Create API Key file
+      script: |
+        touch .env.prod
+        touch .env.dev
+        echo "$PROD_SECRET_ANDROID" >> .env.prod
+        echo "$PROD_API_HOST" >> .env.prod
+        echo "$DEV_SECRET_ANDROID" >> .env.dev
+        echo "$DEV_API_HOST" >> .env.dev
+
     - &set_version_number
       name: 🔢 Set Version
       script: |
@@ -19,7 +29,7 @@ definitions:
         echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
 
     - &shorebird_install
-      name: 🐦 Install Shorebird CLI
+      name: 📍 Install Shorebird CLI
       script: |
         # Install the Shorebird CLI
         curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
@@ -32,13 +42,6 @@ definitions:
     # an app_config.json file right under it, including the decoded contents.
     # This is a Foodium-specific step as this App requires this file's contents 
     # at startup.
-    - &download_env_files
-      name: 🐦 Download Environment Files
-      script: |
-        # Download .env.prod and .env.dev from Google Drive (**Warning: Security Risk**)
-        wget https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_PROJECT_DIR/.env.prod
-        wget https://drive.google.com/uc?export=download&id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ -O $CM_PROJECT_DIR/.env.dev
-
     - &run_build_runner
       name: 🛠️ Run Build Runner
       script: |
@@ -61,7 +64,7 @@ definitions:
     - &build_android
       name: 🤖 Android Release Build
       script: |
-        shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
     # Use shorebird to create an iOS release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -70,7 +73,7 @@ definitions:
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
-        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
           
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -101,27 +104,27 @@ workflows:
   release-list-production:
     name: Release List Production
     # This integration allows for the publishing of this build to App Store Connect
-    integrations:
-      # AppStoreConnect_AuthKey is the name of the API key used to integrate 
-      # Codemagic with Apple Developer Portal.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
-      app_store_connect: AppStoreConnect_AuthKey
+    # integrations:
+    #   # AppStoreConnect_AuthKey is the name of the API key used to integrate 
+    #   # Codemagic with Apple Developer Portal.
+    #   # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
+    #   app_store_connect: AppStoreConnect_AuthKey
     environment:
       # To perform iOS signing, a provisioning profile and certificate 
       # with the necessary permissions need to be provided.
       # Notice the name of the profile and the certificate match the ones used 
       # when they were added to Codemagic.
       # Check this link for more info - https://docs.codemagic.io/yaml-code-signing/signing-ios
-      ios_signing:
-        provisioning_profiles:
-          - prod_profile
-        certificates:
-          - dist_certificate
-      # Similarly, we need to sign the Android build by providing the corresponding 
-      # keystore.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-      android_signing:
-        - production_keystore
+      # ios_signing:
+      #   provisioning_profiles:
+      #     - prod_profile
+      #   certificates:
+      #     - dist_certificate
+      # # Similarly, we need to sign the Android build by providing the corresponding 
+      # # keystore.
+      # # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+      # android_signing:
+      #   - production_keystore
       # Since this is the production build for Foodium, the target and the flavor 
       # are both set to production.
       # Add your app's unique bundle.
@@ -134,9 +137,9 @@ workflows:
       # groups which give us access to pre-defined environment variables.
       groups:
         - list
-        - app_store_credentials 
-        - google_play_credentials 
-        - certificate_credentials
+        # - app_store_credentials 
+        # - google_play_credentials 
+        # - certificate_credentials
         - shorebird
       flutter: 3.22.0
       xcode: 15.0.1
@@ -157,13 +160,12 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
-      - *download_env_files
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
       - *shorebird_install
       - *build_android
-      - *use_provisioning_profiles
       - *build_ios
     # These are the resulting files/binaries produced by the building process.
     artifacts:
@@ -180,13 +182,13 @@ workflows:
     # In this case, we're automatically submitting the builds to Testflight for iOS 
     # and the internal test track for Andriod -- Configure the submission to your needs.
     publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+      #   submit_to_app_store: false
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
       # Configure email notifications about the store publishing result.
       email:
         recipients:
@@ -196,102 +198,99 @@ workflows:
           failure: false
 
   # Since Foodium has different flavors, a staging-specific workflow is defined.
-  release-list-staging:
-    name: Release List Staging
-    # This integration allows for the publishing of this build to App Store Connect
-    integrations:
-      # AppStoreConnect_AuthKey is the name of the API key used to integrate 
-      # Codemagic with Apple Developer Portal.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
-      app_store_connect: AppStoreConnect_AuthKey
-    environment:
-      # To perform iOS signing, a provisioning profile and certificate 
-      # with the necessary permissions need to be provided.
-      # Notice the name of the profile and the certificate match the ones used 
-      # when they were added to Codemagic.
-      # Check this link for more info - https://docs.codemagic.io/yaml-code-signing/signing-ios
-      ios_signing:
-        provisioning_profiles:
-          - stg_profile
-        certificates:
-          - dist_certificate
-      # Similarly, we need to sign the Android build by providing the corresponding 
-      # keystore.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-      android_signing:
-        - staging_keystore
-      # Since this is the staging build for Foodium, the target and the flavor 
-      # are both set to staging.
-      # Add your app's unique bundle.
-      vars:
-        TARGET: production
-        FLAVOR: production
-        BUNDLE: com.example.list.stg
-      # These group must have been previously defined on codemagic's dashboard.
-      # Notice foodium is an app-specific group, while the rest are account/team level 
-      # groups which give us access to pre-defined environment variables.
-      groups:
-        - list
-        - app_store_credentials 
-        - google_play_credentials 
-        - certificate_credentials
-        - shorebird
-      flutter: 3.22.0
-      xcode: 15.0.1
-      cocoapods: default
-      # This version of java is required for Foodium's Android build.
-      # You may not need to set this argument.
-      java: 17
-    max_build_duration: 60
-    # This defines how and when this workflow will be triggered.
-    # Based on the parms passed below, the release-foodium-staging workflow 
-    # will be executed on a push to the staging branch.
-    # # Check this link for more info - https://docs.codemagic.io/yaml-running-builds/starting-builds-automatically/
-    triggering:
-      events:
-        - push
-      branch_patterns:          
-        - pattern: 'staging'
-      cancel_previous_builds: true
-    # The scripts that will be run and their execution order is defined here.
-    scripts:
-      - *download_env_files
-      - *set_version_number
-      - *set_up_local_properties
-      - *run_build_runner
-      - *shorebird_install
-      - *build_android
-      - *use_provisioning_profiles
-      - *build_ios
-    # These are the resulting files/binaries produced by the building process.
-    artifacts:
-      - build/**/outputs/*apk/**/*.apk
-      - build/**/outputs/*bundle/**/*.aab
-      - build/**/outputs/**/mapping.txt
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-    # Publishing to the App Store and Play Store requires the corresponding 
-    # authentication credentials.
-    # For iOS, the previously-configured integration method is used, while for 
-    # android, we pass the contents of the GCLOUD_SERVICE_ACCOUNT_CREDENTIALS variable 
-    # defined in the environment variables.
-    # In this case, we're automatically submitting the builds to Testflight for iOS 
-    # and the internal test track for Andriod -- Configure the submission to your needs.
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-      # Configure email notifications about the store publishing result.
-      email:
-        recipients:
-          - andikamufc@gmail.com
-        notify:
-          success: true
-          failure: false
+  # release-list-staging:
+  #   name: Release List Staging
+  #   # This integration allows for the publishing of this build to App Store Connect
+  #   integrations:
+  #     # AppStoreConnect_AuthKey is the name of the API key used to integrate 
+  #     # Codemagic with Apple Developer Portal.
+  #     # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
+  #     app_store_connect: AppStoreConnect_AuthKey
+  #   environment:
+  #     # To perform iOS signing, a provisioning profile and certificate 
+  #     # with the necessary permissions need to be provided.
+  #     # Notice the name of the profile and the certificate match the ones used 
+  #     # when they were added to Codemagic.
+  #     # Check this link for more info - https://docs.codemagic.io/yaml-code-signing/signing-ios
+  #     ios_signing:
+  #       provisioning_profiles:
+  #         - stg_profile
+  #       certificates:
+  #         - dist_certificate
+  #     # Similarly, we need to sign the Android build by providing the corresponding 
+  #     # keystore.
+  #     # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+  #     android_signing:
+  #       - staging_keystore
+  #     # Since this is the staging build for Foodium, the target and the flavor 
+  #     # are both set to staging.
+  #     # Add your app's unique bundle.
+  #     vars:
+  #       TARGET: production
+  #       FLAVOR: production
+  #       BUNDLE: com.example.list.stg
+  #     # These group must have been previously defined on codemagic's dashboard.
+  #     # Notice foodium is an app-specific group, while the rest are account/team level 
+  #     # groups which give us access to pre-defined environment variables.
+  #     groups:
+  #       - list
+  #       - shorebird
+  #     flutter: 3.22.0
+  #     xcode: 15.0.1
+  #     cocoapods: default
+  #     # This version of java is required for Foodium's Android build.
+  #     # You may not need to set this argument.
+  #     java: 17
+  #   max_build_duration: 60
+  #   # This defines how and when this workflow will be triggered.
+  #   # Based on the parms passed below, the release-foodium-staging workflow 
+  #   # will be executed on a push to the staging branch.
+  #   # # Check this link for more info - https://docs.codemagic.io/yaml-running-builds/starting-builds-automatically/
+  #   triggering:
+  #     events:
+  #       - push
+  #     branch_patterns:          
+  #       - pattern: 'staging'
+  #     cancel_previous_builds: true
+  #   # The scripts that will be run and their execution order is defined here.
+  #   scripts:
+  #     - *create_env_files
+  #     - *set_version_number
+  #     - *set_up_local_properties
+  #     - *run_build_runner
+  #     - *shorebird_install
+  #     - *build_android
+  #     - *use_provisioning_profiles
+  #     - *build_ios
+  #   # These are the resulting files/binaries produced by the building process.
+  #   artifacts:
+  #     - build/**/outputs/*apk/**/*.apk
+  #     - build/**/outputs/*bundle/**/*.aab
+  #     - build/**/outputs/**/mapping.txt
+  #     - build/ios/ipa/*.ipa
+  #     - /tmp/xcodebuild_logs/*.log
+  #   # Publishing to the App Store and Play Store requires the corresponding 
+  #   # authentication credentials.
+  #   # For iOS, the previously-configured integration method is used, while for 
+  #   # android, we pass the contents of the GCLOUD_SERVICE_ACCOUNT_CREDENTIALS variable 
+  #   # defined in the environment variables.
+  #   # In this case, we're automatically submitting the builds to Testflight for iOS 
+  #   # and the internal test track for Andriod -- Configure the submission to your needs.
+  #   publishing:
+  #     # app_store_connect:
+  #     #   auth: integration
+  #     #   submit_to_testflight: true
+  #     #   submit_to_app_store: false
+  #     # google_play:
+  #     #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+  #     #   track: internal
+  #     # Configure email notifications about the store publishing result.
+  #     email:
+  #       recipients:
+  #         - andikamufc@gmail.com
+  #       notify:
+  #         success: true
+  #         failure: false
 
   # We're only interested in patching production releases.
   # Therefore, a single workflow targetting a previously released production 
@@ -306,6 +305,7 @@ workflows:
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
+          target: true  
       cancel_previous_builds: true
     environment:
       java: 17
@@ -320,7 +320,7 @@ workflows:
         FLAVOR: prod
         BUNDLE: com.example.list
     scripts:
-      - *download_env_files
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
       - *run_build_runner
