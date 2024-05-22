@@ -123,7 +123,7 @@ workflows:
          source: true  
       cancel_previous_builds: true
     when:
-      condition: not event.tag.name == "hotfix"
+      condition: not event.labels[0].tag.name == "hotfix"
     # The scripts that will be run and their execution order is defined here.
     scripts:
       - *create_env_files
@@ -179,6 +179,7 @@ workflows:
       tag_patterns:
         - pattern: 'hotfix'
           include: true
+         source: true  
       cancel_previous_builds: true
     environment:
       java: 17
