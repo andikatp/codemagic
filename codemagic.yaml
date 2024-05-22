@@ -4,7 +4,24 @@ definitions:
   scripts:
     # The App version is set here.
     # This needs to be updated manually any time a new version is to be 
-    # released to the stores.
+    # released to the store0s.
+    - &download_env_files
+      name: 🐦 Download Environment Files
+      script: |
+        # Download .env.prod and .env.dev from Google Drive
+        curl -L https://drive.usercontent.google.com/uc?id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU&export=download > $CM_BUILD_DIR/.env.dev
+        curl -L https://drive.usercontent.google.com/u/0/uc?id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ&export=download > $CM_BUILD_DIR/.env.
+    
+    - &create_env_files
+      name: 🔑 Create API Key file
+      script: |
+        touch .env.prod
+        touch .env.dev
+        echo "$PROD_SECRET_ANDROID" >> .env.prod
+        echo "$PROD_API_HOST" >> .env.prod
+        echo "$DEV_SECRET_ANDROID" >> .env.dev
+        echo "$DEV_API_HOST" >> .env.dev
+
     - &set_version_number
       name: 🔢 Set Version
       script: |
@@ -19,7 +36,7 @@ definitions:
         echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
 
     - &shorebird_install
-      name: 🐦 Install Shorebird CLI
+      name: 📍 Install Shorebird CLI
       script: |
         # Install the Shorebird CLI
         curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
@@ -32,6 +49,12 @@ definitions:
     # an app_config.json file right under it, including the decoded contents.
     # This is a Foodium-specific step as this App requires this file's contents 
     # at startup.
+    - &run_build_runner
+      name: 🛠️ Run Build Runner
+      script: |
+        # Run build runner
+        dart run build_runner build
+    
     - &flutter_analyze
       name: 🔍 Run static code analysis
       script: flutter analyze
@@ -48,7 +71,7 @@ definitions:
     - &build_android
       name: 🤖 Android Release Build
       script: |
-        shorebird release android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
 
     # Use shorebird to create an iOS release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -57,7 +80,7 @@ definitions:
     - &build_ios
       name: 🍎 iOS Release Build
       script: |
-        shorebird release ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
+        shorebird release ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart -- --export-options-plist /Users/builder/export_options.plist --build-name=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION --build-number=$PROJECT_BUILD_NUMBER
           
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -68,7 +91,7 @@ definitions:
     - &patch_android
       name: 🤖 Android PATCH Build
       script: |
-        shorebird patch android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart --release-version 2.4.0+264
+        shorebird patch android --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -79,7 +102,7 @@ definitions:
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
-       shorebird patch ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart --release-version 2.4.0+264
+       shorebird patch ios --flavor ${FLAVOR} --target lib/main_${TARGET}.dart
 
 # The workflows section allows for the implementation of different workflows that'll 
 # get triggered/executed under different circumstances.
@@ -120,7 +143,7 @@ workflows:
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -138,17 +161,19 @@ workflows:
     # # Check this link for more info - https://docs.codemagic.io/yaml-running-builds/starting-builds-automatically/
     triggering:
       events:
-        - push
+        - pull_request
       branch_patterns:          
         - pattern: 'main'
+          source: true 
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
-      - *use_provisioning_profiles
       - *build_ios
     # These are the resulting files/binaries produced by the building process.
     artifacts:
@@ -165,24 +190,24 @@ workflows:
     # In this case, we're automatically submitting the builds to Testflight for iOS 
     # and the internal test track for Andriod -- Configure the submission to your needs.
     publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+      #   submit_to_app_store: false
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
 
   # Since Foodium has different flavors, a staging-specific workflow is defined.
-  release-foodium-staging:
-    name: Release Foodium Staging
+  release-list-staging:
+    name: Release List Staging
     # This integration allows for the publishing of this build to App Store Connect
     integrations:
       # AppStoreConnect_AuthKey is the name of the API key used to integrate 
@@ -211,12 +236,12 @@ workflows:
       vars:
         TARGET: production
         FLAVOR: production
-        BUNDLE: your.app.bundle.stg
+        BUNDLE: com.example.list.stg
       # These group must have been previously defined on codemagic's dashboard.
       # Notice foodium is an app-specific group, while the rest are account/team level 
       # groups which give us access to pre-defined environment variables.
       groups:
-        - foodium
+        - list
         - app_store_credentials 
         - google_play_credentials 
         - certificate_credentials
@@ -240,8 +265,10 @@ workflows:
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       - *build_android
       - *use_provisioning_profiles
@@ -261,17 +288,17 @@ workflows:
     # In this case, we're automatically submitting the builds to Testflight for iOS 
     # and the internal test track for Andriod -- Configure the submission to your needs.
     publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        submit_to_app_store: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+      #   submit_to_app_store: false
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
       # Configure email notifications about the store publishing result.
       email:
         recipients:
-          - someone@email.com
+          - andikamufc@gmail.com
         notify:
           success: true
           failure: false
@@ -281,14 +308,15 @@ workflows:
   # build is necessary.
   # Notice only differences with respect to the two previous workflows are commented.
   patch-list-production:
-    name: Patch Foodium Production
+    name: Patch List Production
     max_build_duration: 60
     triggering:
       events:
-        - push
+        - pull_request
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'patch'
+          source: true  
       cancel_previous_builds: true
     environment:
       java: 17
@@ -303,8 +331,10 @@ workflows:
         FLAVOR: prod
         BUNDLE: com.example.list
     scripts:
+      - *create_env_files
       - *set_version_number
       - *set_up_local_properties
+      - *run_build_runner
       - *shorebird_install
       # Make sure to add the corresponding Android and iOS path scripts.
       - *patch_android
