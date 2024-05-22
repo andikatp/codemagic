@@ -111,27 +111,27 @@ workflows:
   release-list-production:
     name: Release List Production
     # This integration allows for the publishing of this build to App Store Connect
-    integrations:
-      # AppStoreConnect_AuthKey is the name of the API key used to integrate 
-      # Codemagic with Apple Developer Portal.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
-      app_store_connect: AppStoreConnect_AuthKey
+    # integrations:
+    #   # AppStoreConnect_AuthKey is the name of the API key used to integrate 
+    #   # Codemagic with Apple Developer Portal.
+    #   # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/ios-code-signing/
+    #   app_store_connect: AppStoreConnect_AuthKey
     environment:
       # To perform iOS signing, a provisioning profile and certificate 
       # with the necessary permissions need to be provided.
       # Notice the name of the profile and the certificate match the ones used 
       # when they were added to Codemagic.
       # Check this link for more info - https://docs.codemagic.io/yaml-code-signing/signing-ios
-      ios_signing:
-        provisioning_profiles:
-          - prod_profile
-        certificates:
-          - dist_certificate
-      # Similarly, we need to sign the Android build by providing the corresponding 
-      # keystore.
-      # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-      android_signing:
-        - production_keystore
+      # ios_signing:
+      #   provisioning_profiles:
+      #     - prod_profile
+      #   certificates:
+      #     - dist_certificate
+      # # Similarly, we need to sign the Android build by providing the corresponding 
+      # # keystore.
+      # # Check this link for more info - https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+      # android_signing:
+      #   - production_keystore
       # Since this is the production build for Foodium, the target and the flavor 
       # are both set to production.
       # Add your app's unique bundle.
@@ -164,7 +164,6 @@ workflows:
         - pull_request
       branch_patterns:          
         - pattern: 'main'
-          target: true 
       cancel_previous_builds: true
     # The scripts that will be run and their execution order is defined here.
     scripts:
