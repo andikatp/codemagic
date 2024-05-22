@@ -68,7 +68,7 @@ definitions:
     - &patch_android
       name: 🤖 Android PATCH Build
       script: |
-        shorebird patch android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart --release-version 2.4.0+264
+        shorebird patch android --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
 
     # Use shorebird to create a patch for an existing android release.
     # Since Foodium uses flavors, we need to specify the desired flavor and target file.
@@ -79,7 +79,7 @@ definitions:
     - &patch_ios
       name: 🍎 iOS PATCH Build
       script: |
-       shorebird patch ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart --release-version 2.4.0+264
+       shorebird patch ios --flavor ${FLAVOR} --target lib/main/main_${TARGET}.dart
 
 # The workflows section allows for the implementation of different workflows that'll 
 # get triggered/executed under different circumstances.
