@@ -306,6 +306,7 @@ workflows:
         # In this case, we're triggering this build when pushing to the path branch.       
         - pattern: 'codemagic-learn'
         - target: true
+        - source: true
       cancel_previous_builds: true
     environment:
       java: 17
