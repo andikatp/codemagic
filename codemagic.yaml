@@ -33,7 +33,7 @@ definitions:
     # This is a Foodium-specific step as this App requires this file's contents 
     # at startup.
     - &download_env_files
-      name: Download Environment Files
+      name: 🐦 Download Environment Files
       script: |
         # Download .env.prod and .env.dev from Google Drive (**Warning: Security Risk**)
         wget https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_PROJECT_DIR/.env.prod
