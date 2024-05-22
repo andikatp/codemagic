@@ -144,9 +144,9 @@ workflows:
       # groups which give us access to pre-defined environment variables.
       groups:
         - list
-        - app_store_credentials 
-        - google_play_credentials 
-        - certificate_credentials
+        # - app_store_credentials 
+        # - google_play_credentials 
+        # - certificate_credentials
         - shorebird
       flutter: 3.22.0
       xcode: 15.0.1
