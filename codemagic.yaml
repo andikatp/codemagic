@@ -304,9 +304,9 @@ workflows:
         - pull_request
       branch_patterns:   
         # In this case, we're triggering this build when pushing to the path branch.       
-        - pattern: 'patch'
+        - pattern: '*'
           include: true
-          target: true  
+          source: true
       cancel_previous_builds: true
     environment:
       java: 17
