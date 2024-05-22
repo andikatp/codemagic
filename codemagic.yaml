@@ -9,8 +9,8 @@ definitions:
       name: 🐦 Download Environment Files
       script: |
         # Download .env.prod and .env.dev from Google Drive
-        wget https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_BUILD_DIR/.env.dev
-        wget https://drive.google.com/uc?export=download&id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ -O $CM_BUILD_DIR/.env.prod
+        curl -L https://drive.google.com/uc?export=download&id=1ze-RoPS0Ax0oF20qa5Lv0Rwd2AY9EIwU -O $CM_BUILD_DIR/.env.dev
+        curl -L https://drive.google.com/uc?export=download&id=1lqlW4DlUaaAwXAd-ytR7nbL3hSnk6cQJ -O $CM_BUILD_DIR/.env.prod
 
     - &set_version_number
       name: 🔢 Set Version
