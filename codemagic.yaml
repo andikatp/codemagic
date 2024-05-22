@@ -116,6 +116,7 @@ workflows:
       events:
         - pull_request
         - push
+        - tag
       branch_patterns:          
         - pattern: 'main'
           include: true
@@ -267,6 +268,7 @@ workflows:
       events:
         - pull_request
         - push
+        - tag
       branch_patterns:              # Include or exclude watched branches
         - pattern: 'main'
       tag_patterns:
