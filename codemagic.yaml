@@ -115,8 +115,6 @@ workflows:
     triggering:
       events:
         - tag
-      branch_patterns:      
-        - pattern: 'main'
       tag_patterns:
         - pattern: 'hotfix'
           include: true
