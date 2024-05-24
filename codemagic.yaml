@@ -80,14 +80,11 @@ workflows:
     triggering:
       events:
         - pull_request
-        - tag
       branch_patterns:
         - pattern: "main"
           include: true
           source: true
       cancel_previous_builds: true
-    when:
-      condition: not event.tag
 
     scripts:
       - *create_env_files
