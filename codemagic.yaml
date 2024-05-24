@@ -114,7 +114,6 @@ workflows:
     max_build_duration: 60
     triggering:
       events:
-        - push
         - tag
       branch_patterns:      
         - pattern: 'main'
