@@ -97,7 +97,6 @@ class _HomeState extends State<Home> {
                                 context: context,
                                 pageListBuilder: (modalContext) =>
                                     [page1(modalContext), page2(modalContext)]),
-
                             child: const Text('Press Me'),
 
                           ),
