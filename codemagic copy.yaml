@@ -80,6 +80,7 @@ workflows:
     triggering:
       events:
         - pull_request
+        - push
         - tag
       branch_patterns:
         - pattern: "main"
@@ -94,7 +95,9 @@ workflows:
       - *set_up_local_properties
       - *run_build_runner
       - *shorebird_install
-      - *build_android
+      - if: ${{ event.tag }}
+              then: *build_android
+              else: *patch_android 
 
     artifacts:
       - build/**/outputs/*apk/**/*.apk
@@ -110,3 +113,47 @@ workflows:
         notify:
           success: true
           failure: false
+
+  # patch-list-production:
+  #   name: Patch List Production
+  #   max_build_duration: 60
+  #   triggering:
+  #     events:
+  #       - pull_request
+  #       - push
+  #       - tag
+  #     branch_patterns:
+  #       - pattern: "main"
+  #     cancel_previous_builds: true
+  #   environment:
+  #     java: 17
+  #     groups:
+  #       - list
+  #       - shorebird
+  #     flutter: 3.22.0
+  #     xcode: 15.0.1
+  #     cocoapods: default
+  #     vars:
+  #       TARGET: prod
+  #       FLAVOR: prod
+  #       BUNDLE: com.example.list
+  #   scripts:
+  #     - *create_env_files
+  #     - *set_up_local_properties
+  #     - *run_build_runner
+  #     - *shorebird_install
+  #     - *patch_android
+
+  #   artifacts:
+  #     - build/**/outputs/*apk/**/*.apk
+  #     - build/**/outputs/*bundle/**/*.aab
+  #     - build/**/outputs/**/mapping.txt
+  #     - build/ios/ipa/*.ipa
+  #     - /tmp/xcodebuild_logs/*.log
+  #   publishing:
+  #     email:
+  #       recipients:
+  #         - andikamufc@email.com
+  #       notify:
+  #         success: true
+  #         failure: false
